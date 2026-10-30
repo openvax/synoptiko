@@ -11,15 +11,15 @@
 # limitations under the License.
 
 import sys
-
 from io import StringIO
+
 from varcode import EffectCollection, iter_candidate_effects
-from varcode.cli import variant_collection_from_args, make_variants_parser
+from varcode.cli import make_variants_parser, variant_collection_from_args
 
 from .data import (
     cancer_driver_gene_id_set,
+    class1_mhc_gene_id_set,
     interferon_response_gene_id_set,
-    class1_mhc_gene_id_set
 )
 
 parser = make_variants_parser()
@@ -44,19 +44,12 @@ def main(args_list=None):
     coding_effects_per_variant = coding_effects.top_priority_effect_per_variant()
 
     with StringIO() as string_io:
-        string_io.write("%30s: %5d\n" % ("total variants", len(variants)))
-        string_io.write("%30s: %5d\n" % (
-            "# SNVs",
-            sum([v.is_snv for v in variants])
-        ))
-        string_io.write("%30s: %5d\n" % (
-            "# indels",
-            sum([v.is_indel for v in variants])
-        ))
-
-        string_io.write("%30s: %5d\n" % (
-            "coding non-synonymous variants",
-            len(coding_effects_per_variant)))
+        for label, count in (
+                ("total variants", len(variants)),
+                ("# SNVs", sum(v.is_snv for v in variants)),
+                ("# indels", sum(v.is_indel for v in variants)),
+                ("coding non-synonymous variants", len(coding_effects_per_variant))):
+            string_io.write(f"{label:>30}: {count:5d}\n")
 
         string_io.write("A variant is counted when any candidate changes the protein.\n"
                         "Candidates are predictions, not observed products or probabilities.\n")
@@ -65,18 +58,18 @@ def main(args_list=None):
                 ("known cancer", cancer_driver_gene_id_set),
                 ("MHC-I presentation", class1_mhc_gene_id_set),
                 ("interferon response", interferon_response_gene_id_set)):
-            string_io.write("\nCoding variants in %s genes:\n" % label)
+            string_io.write(f"\nCoding variants in {label} genes:\n")
             for v, e in coding_effects_per_variant.items():
                 if e.gene_id not in gene_ids:
                     continue
-                string_io.write("-- %s %s (%s)\n" % (e.gene_name, e.short_description, v.short_description))
+                string_io.write(f"-- {e.gene_name} {e.short_description} ({v.short_description})\n")
                 candidates = list(iter_candidate_effects(e))
                 if len(candidates) > 1:
                     descriptions = [
-                        "%s: %s" % (type(c).__name__, c.short_description)
+                        f"{type(c).__name__}: {c.short_description}"
                         if c is not None else "Unresolved: unavailable candidate"
                         for c in candidates]
-                    string_io.write("   candidate consequences: %s\n" % "; ".join(descriptions))
+                    string_io.write(f"   candidate consequences: {'; '.join(descriptions)}\n")
         text = string_io.getvalue()
 
     print(text)

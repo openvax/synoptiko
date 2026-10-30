@@ -11,7 +11,9 @@
 # limitations under the License.
 
 import os
+
 import pandas as pd
+
 data_dir = os.path.dirname(__file__)
 
 cancer_driver_genes_csv = os.path.join(data_dir, "cancer-driver-genes.csv")

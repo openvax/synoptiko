@@ -12,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import print_function, absolute_import
 import os
 import re
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 project_name = "synoptiko"
 description = "Summary report of somatic mutations from cancer DNA sequencing data"
@@ -29,21 +28,21 @@ readme_filename = 'README.md'
 readme_path = os.path.join(current_directory, readme_filename)
 
 try:
-    with open(readme_path, 'r') as f:
+    with open(readme_path) as f:
         readme_markdown = f.read()
-except IOError as e:
+except OSError as e:
     print(e)
-    print("Failed to open %s" % readme_path)
+    print(f"Failed to open {readme_path}")
     readme_markdown = ""
 
 def parse_field(name):
-    with open('%s/__init__.py' % project_name_no_dashes, 'r') as f:
+    with open(f'{project_name_no_dashes}/__init__.py') as f:
         value = re.search(
-            r'^%s\s*=\s*[\'"]([^\'"]*)[\'"]' % name,
+            rf'^{name}\s*=\s*[\'"]([^\'"]*)[\'"]',
             f.read(),
             re.MULTILINE).group(1)
     if not value:
-        raise RuntimeError("Cannot find '%s' in %s's __init__.py" % (name, project_name))
+        raise RuntimeError(f"Cannot find '{name}' in {project_name}'s __init__.py")
     return value
 
 version = parse_field("__version__")
@@ -59,7 +58,7 @@ if __name__ == '__main__':
         description=description,
         author=author,
         author_email=author_email,
-        url="https://github.com/openvax/%s" % project_name,
+        url=f"https://github.com/openvax/{project_name}",
         license="http://www.apache.org/licenses/LICENSE-2.0.html",
         classifiers=[
             'Development Status :: 3 - Alpha',
