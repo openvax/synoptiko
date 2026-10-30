@@ -1,8 +1,15 @@
 # Releasing
 
-This document explains what do once your [Pull Request](https://www.atlassian.com/git/tutorials/making-a-pull-request/) has been reviewed and all final changes applied. Now you're ready merge your branch into master and release it to the world:
+Bump `synoptiko.__version__` in the PR. Run `./lint.sh`, `./test.sh`, and the
+Python 3.11–3.14 CI matrix, including the real annotation test. After review and
+green CI, merge to `master` and release from its clean, current checkout:
 
-1. Make sure that you have `pandoc` and `pypandoc` installed on Travis: this is needed for readme markdown on PyPI. (See [here](http://pandoc.org/installing.html) and [here](https://pypi.python.org/pypi/pypandoc), respectively, for instructions.)
-2. Bump the [version](http://semver.org/) in `__init__.py`, as part of the PR you want to release.
-3. Merge your branch into master.
-4. Travis shoukd be configured to auto-deploy to PyPI, as long as the tests succeed and the library version is newer than any released.
+```sh
+python -m build
+python -m twine check dist/*
+python -m twine upload dist/*
+```
+
+Create and push the matching annotated `v<version>` Git tag, then verify the
+published version and wheel dependencies on PyPI. Build/upload tooling belongs
+in the release environment. Travis no longer publishes releases.
