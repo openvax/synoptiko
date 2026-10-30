@@ -1,9 +1,4 @@
-<a href="https://travis-ci.org/openvax/synoptiko">
-    <img src="https://travis-ci.org/openvax/synoptiko.svg?branch=master" alt="Build Status" />
-</a>
-<a href="https://coveralls.io/github/openvax/synoptiko?branch=master">
-    <img src="https://coveralls.io/repos/openvax/synoptiko/badge.svg?branch=master&service=github" alt="Coverage Status" />
-</a>
+[![Tests](https://github.com/openvax/synoptiko/actions/workflows/tests.yml/badge.svg)](https://github.com/openvax/synoptiko/actions/workflows/tests.yml)
 <a href="https://pypi.python.org/pypi/synoptiko/">
     <img src="https://img.shields.io/pypi/v/synoptiko.svg?maxAge=1000" alt="PyPI" />
 </a>
@@ -36,3 +31,22 @@ Coding variants in MHC-I presentation genes:
 Coding variants in interferon response genes:
     none
 ```
+
+## Installation and annotation semantics
+
+Requires Python 3.11+ and Varcode 11.1+ (below 12). Install with
+`pip install --upgrade synoptiko`, and install the matching reference annotation
+with PyEnsembl before annotating a VCF. Varcode and pandas are declared runtime
+dependencies.
+
+The coding count includes a variant when any concrete candidate changes its
+protein. The primary annotation can still be intronic or synonymous. Each gene
+panel retains the primary description and lists candidate consequences,
+including unresolved alternatives. Priority and producer ordering do not give
+probabilities; none of these annotations establish RNA expression or peptide
+presentation. Gene panels are the bundled historical CSVs, not a current CTA
+curation or target-admission policy.
+
+For development, install `.[test]`, then run `./lint.sh` and `./test.sh`.
+The annotated integration test requires human Ensembl release 75; other tests
+run with `./test.sh -m 'not ensembl'`.

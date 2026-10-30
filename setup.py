@@ -55,6 +55,7 @@ if __name__ == '__main__':
     setup(
         name=project_name_no_dashes,
         version=version,
+        python_requires='>=3.11',
         description=description,
         author=author,
         author_email=author_email,
@@ -69,13 +70,12 @@ if __name__ == '__main__':
             'Programming Language :: Python',
             'Topic :: Scientific/Engineering :: Bio-Informatics',
         ],
-        install_requires=[
-            "six>=1.9.0",
-        ],
+        install_requires=open(os.path.join(current_directory, 'requirements.txt')).read().splitlines(),
+        extras_require={'test': ['pytest>=8,<10', 'pytest-cov>=5', 'ruff>=0.15']},
         long_description=readme_markdown,
         long_description_content_type='text/markdown',
         packages=find_packages(),
-        package_data={"": "*.csv"},
+        package_data={"synoptiko": ["*.csv"]},
         include_package_data=True,
         entry_points={
             'console_scripts': [
